@@ -110,6 +110,8 @@ def merge_files(args, base_path):
             if args.xml:
                 sc.print_xml(merged, source_paths=[str(base_path)], with_branches=args.branch,
                              xml_package_depth=args.xml_package_depth, outfile=jf)
+            elif args.lcov:
+                sc.print_lcov(merged, with_branches=args.branch, outfile=jf)
             else:
                 json.dump(merged, jf, indent=(4 if args.pretty_print else None))
 
@@ -149,6 +151,7 @@ def main():
         "Controls which directories are identified as packages in the report. "
         "Directories deeper than this depth are not reported as packages. "
         "The default is that all directories are reported as packages."))
+    ap.add_argument('--lcov', action='store_true', help="select LCOV output")
     ap.add_argument('--out', type=Path, help="specify output file name")
     ap.add_argument('--source', help="specify directories to cover")
     ap.add_argument('--omit', help="specify file(s) to omit")
@@ -227,6 +230,8 @@ def main():
             elif args.xml:
                 sc.print_xml(coverage, source_paths=[str(base_path)], with_branches=args.branch,
                              xml_package_depth=args.xml_package_depth, outfile=outfile)
+            elif args.lcov:
+                sc.print_lcov(coverage, with_branches=args.branch, outfile=outfile)
             else:
                 sc.print_coverage(coverage, outfile=outfile, skip_covered=args.skip_covered,
                                   missing_width=args.missing_width)
