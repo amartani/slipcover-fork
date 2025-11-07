@@ -120,11 +120,15 @@ def print_lcov(
     coverage: Coverage,
     *,
     with_branches: bool = False,
+    test_name: Optional[str] = None,
+    comments: Optional[List[str]] = None,
     outfile=sys.stdout
 ) -> None:
     LcovReporter(
         coverage=coverage,
         with_branches=with_branches,
+        test_name=test_name,
+        comments=comments,
     ).report(outfile=outfile)
 
 

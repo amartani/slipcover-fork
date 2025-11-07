@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 from collections import defaultdict
-from typing import TYPE_CHECKING, Dict, List, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 if TYPE_CHECKING:
     from typing import IO
@@ -53,9 +53,13 @@ class LcovReporter:
         self,
         coverage: Coverage,
         with_branches: bool,
+        test_name: Optional[str] = None,
+        comments: Optional[List[str]] = None,
     ) -> None:
         self.coverage = coverage
         self.with_branches = with_branches
+        self.test_name = test_name
+        self.comments = comments or []
 
     def report(self, outfile: IO[str] | None = None) -> None:
         """Generate an LCOV-compatible coverage report.
@@ -66,6 +70,10 @@ class LcovReporter:
         # Initial setup.
         outfile = outfile or sys.stdout
 
+        # Write comments at the beginning of the file if provided
+        for comment in self.comments:
+            outfile.write(f"# {comment}\n")
+
         # Write each file's coverage data
         for file_path, file_data in sorted(self.coverage["files"].items()):
             self._write_file_coverage(outfile, file_path, file_data)
@@ -75,8 +83,9 @@ class LcovReporter:
     ) -> None:
         """Write LCOV coverage data for a single file."""
 
-        # TN: Test Name (optional, we'll use an empty test name)
-        outfile.write("TN:\n")
+        # TN: Test Name (optional, only write if test_name is provided)
+        if self.test_name is not None:
+            outfile.write(f"TN:{self.test_name}\n")
 
         # SF: Source File
         outfile.write(f"SF:{file_path}\n")
